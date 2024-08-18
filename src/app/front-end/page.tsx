@@ -6,17 +6,13 @@ const Main_page = () => {
   return (
     <div>
       <Grid container>
-        <Grid item xs={6}>
-          <h1>start</h1>
-          <p>hello world</p>
-        </Grid>
-        <Grid item xs={6} textAlign='center'>
+        <Grid item xs={12}>
           <Image
-            src='/images/blog.gif'
+            src='/images/heropage.gif'
             alt='Picture of the author'
             width={490}
             height={450}
-            style={{ marginTop: '50px' }}
+            style={{ width: '100%', height: '100%', marginTop: '-46px' }}
             unoptimized
           />
         </Grid>

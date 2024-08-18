@@ -9,6 +9,12 @@ import {
   IconButton,
   InputBase,
   Button,
+  useTheme,
+  useMediaQuery,
+  Drawer,
+  List,
+  ListItem,
+  ListItemText,
 } from '@mui/material';
 import { Search as SearchIcon, Twitter, Facebook } from '@mui/icons-material';
 import Image from 'next/image';
@@ -18,34 +24,38 @@ import { Typography } from '@/app/style/common';
 import { headerTitles } from '@/utils/contents';
 import _map from 'lodash/map';
 import LoginIcon from '@mui/icons-material/Login';
+import MenuIcon from '@mui/icons-material/Menu';
 
 const StyledBox = styled(Box)`
   background-color: #f0f0f0;
-  border-radius: 12px;
+  // border-radius: 12px;
   padding: 12px;
   transition: transform 1s ease;
   backface-visibility: hidden;
 `;
 
-const StyledNacBox = styled(Box)`
- && p{
+const StyledNavBox = styled(Box)`
+  && p {
     margin: 0;
     padding: 0;
     font-size: 18px;
     font-weight: 500;
     margin-left: 44px;
     transition: transform 1s ease;
-    }
+  }
 
-    a{
-      color: black;
-      text-decoration: none;
-    }
-    a:hover{
-      color: lightblue;
-      transition: transform 1s ease;
-    }
- }
+  a {
+    color: black;
+    text-decoration: none;
+  }
+  a:hover {
+    color: lightblue;
+    transition: transform 1s ease;
+  }
+
+  @media (max-width: 600px) {
+    display: none;
+  }
 `;
 
 const StyledSearch = styled('div')(({ theme }) => ({
@@ -71,9 +81,9 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
     transition: theme.transitions.create('width'),
     width: '100%',
     [theme.breakpoints.up('sm')]: {
-      width: '10ch',
+      width: '18ch',
       '&:focus': {
-        width: '30ch',
+        width: '58ch',
       },
     },
   },
@@ -81,6 +91,9 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 
 const HeaderPage = () => {
   const [isScrolled, setIsScrolled] = useState<boolean>(false);
+  const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   useEffect(() => {
     const handleScroll = () => {
@@ -93,6 +106,24 @@ const HeaderPage = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  const toggleDrawer = (open: boolean) => () => {
+    setDrawerOpen(open);
+  };
+
+  const renderDrawer = () => (
+    <Drawer anchor='left' open={drawerOpen} onClose={toggleDrawer(false)}>
+      <List>
+        {_map(headerTitles, (item: any, index: any) => (
+          <ListItem button key={index}>
+            <ListItemText>
+              <Link href={item.href}>{item.title}</Link>
+            </ListItemText>
+          </ListItem>
+        ))}
+      </List>
+    </Drawer>
+  );
+
   return (
     <AppBar
       position={isScrolled ? 'fixed' : 'static'}
@@ -101,10 +132,10 @@ const HeaderPage = () => {
       elevation={0}
       className='header-page'
     >
-      <Box p='0px 16px 0px 16px'>
+      <Box>
         <StyledBox>
           <Grid container alignItems='center' justifyContent='space-between'>
-            <Grid item>
+            <Grid item xs={6} sm={3}>
               <Box
                 display='flex'
                 maxHeight={'50px'}
@@ -115,37 +146,49 @@ const HeaderPage = () => {
                 <Image
                   src='/logo/logo.gif'
                   alt='Tech Hacker'
-                  width={110}
-                  height={98}
+                  width={isMobile ? 80 : 110}
+                  height={isMobile ? 60 : 98}
                   unoptimized
                 />
-                <Typography size={24} color='black' weight={600}>
+                <Typography
+                  size={isMobile ? 20 : 24}
+                  color='black'
+                  weight={600}
+                >
                   Tech Hacker
                 </Typography>
               </Box>
             </Grid>
 
-            <Grid item>
-              <StyledNacBox display='flex' alignItems='center'>
-                {_map(headerTitles, (item: any, index: any) => (
-                  <Typography size={18} weight={600} key={index}>
-                    <Link href={item.href}>{item.title}</Link>
-                  </Typography>
-                ))}
-              </StyledNacBox>
-            </Grid>
+            {/* {!isMobile && (
+              <Grid item>
+                <StyledNavBox
+                  display='flex'
+                  alignItems='center'
+                  flexWrap='wrap'
+                >
+                  {_map(headerTitles, (item: any, index: any) => (
+                    <Typography size={18} weight={600} key={index}>
+                      <Link href={item.href}>{item.title}</Link>
+                    </Typography>
+                  ))}
+                </StyledNavBox>
+              </Grid>
+            )} */}
 
-            <Grid item>
-              <Box display='flex' alignItems='center'>
-                <StyledSearch>
-                  <StyledInputBase
-                    placeholder='Search…'
-                    inputProps={{ 'aria-label': 'search' }}
-                  />
-                  <IconButton aria-label='search'>
-                    <SearchIcon />
-                  </IconButton>
-                </StyledSearch>
+            <Grid item xs={6}>
+              <Box display='flex' justifyContent='flex-end' alignItems='center'>
+                {!isMobile && (
+                  <StyledSearch>
+                    <StyledInputBase
+                      placeholder='Search…'
+                      inputProps={{ 'aria-label': 'search' }}
+                    />
+                    <IconButton aria-label='search'>
+                      <SearchIcon />
+                    </IconButton>
+                  </StyledSearch>
+                )}
                 <Button
                   variant='outlined'
                   color='primary'
@@ -154,11 +197,22 @@ const HeaderPage = () => {
                 >
                   Login
                 </Button>
+                {isMobile && (
+                  <IconButton
+                    edge='end'
+                    color='inherit'
+                    aria-label='menu'
+                    onClick={toggleDrawer(true)}
+                  >
+                    <MenuIcon />
+                  </IconButton>
+                )}
               </Box>
             </Grid>
           </Grid>
         </StyledBox>
       </Box>
+      {renderDrawer()}
     </AppBar>
   );
 };
