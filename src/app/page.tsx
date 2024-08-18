@@ -33,7 +33,7 @@ const Firstpage = () => {
       ) : (
         <>
           <HeaderPage />
-          <div style={{ padding: ' 16px' }}>
+          <div>
             <Main_page />
           </div>
         </>
